@@ -200,7 +200,7 @@ const logout = () => {
             <main class="flex-1">
                 <div class="py-6">
                     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <div class="bg-white rounded-xl shadow-sm p-6 transition-all duration-300 hover:shadow-md">
+                        <div class=" p-2">
                             <slot />
                         </div>
                     </div>

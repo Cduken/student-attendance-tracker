@@ -96,7 +96,7 @@ const deleteClass = (id) => {
             <div class="flex justify-between items-center">
                 <h2 class="text-xl font-semibold leading-tight text-gray-800">My Classes</h2>
                 <PrimaryButton @click="showCreateModal = true"
-                    class="inline-flex items-center bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition shadow-sm">
+                    class="inline-flex items-center bg-indigo-600 text-white text-sm font-medium rounded-md ml-5 hover:bg-indigo-700 transition shadow-sm">
                     <i class="bx bx-plus mr-2"></i> Create New Class
                 </PrimaryButton>
             </div>
@@ -104,18 +104,18 @@ const deleteClass = (id) => {
 
         <div class="py-6">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-white shadow-xl rounded-lg overflow-hidden">
                     <div class="p-6">
                         <div v-if="classes.length === 0" class="text-center py-12 bg-gray-50 rounded-lg">
                             <i class="bx bx-book-open mx-auto text-5xl text-gray-400"></i>
                             <h3 class="mt-4 text-lg font-semibold text-gray-900">No classes yet</h3>
                             <p class="mt-2 text-sm text-gray-500">Get started by creating a new class.</p>
-                            <div class="mt-6">
+                            <!-- <div class="mt-6">
                                 <PrimaryButton @click="showCreateModal = true"
                                     class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition shadow-sm">
                                     <i class="bx bx-plus mr-2"></i> Create Class
                                 </PrimaryButton>
-                            </div>
+                            </div> -->
                         </div>
 
                         <div v-else class="overflow-x-auto">
@@ -291,7 +291,7 @@ const deleteClass = (id) => {
 </template>
 
 <style>
-@import 'https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css';
+
 
 .modal-enter-active,
 .modal-leave-active {

@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\Classes;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -13,22 +14,28 @@ class AttendanceController extends Controller
 {
     public function globalIndex()
     {
-        $attendances = Attendance::whereHas('class', function ($query) {
-            $query->where('teacher_id', Auth::id());
-        })
-            ->with(['student', 'class'])
-            ->latest('date')
-            ->get()
-            ->groupBy('date');
+        try {
+            $attendances = Attendance::whereHas('class', function ($query) {
+                $query->where('teacher_id', Auth::id());
+            })
+                ->with(['student', 'class'])
+                ->latest('date')
+                ->get()
+                ->groupBy(function ($item) {
+                    return Carbon::parse($item->date)->format('Y-m-d'); // Parse string to Carbon
+                });
 
-        $classes = Classes::where('teacher_id', Auth::id())
-            ->withCount('students')
-            ->get();
+            $classes = Classes::where('teacher_id', Auth::id())
+                ->withCount('students')
+                ->get();
 
-        return Inertia::render('Attendance/GlobalIndex', [
-            'attendances' => $attendances,
-            'classes' => $classes,
-        ]);
+            return Inertia::render('Attendance/GlobalIndex', [
+                'attendances' => $attendances,
+                'classes' => $classes,
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to load attendance data');
+        }
     }
 
     public function index(Classes $class)

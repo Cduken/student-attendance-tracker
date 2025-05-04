@@ -32,7 +32,7 @@ defineProps({
 
         <div class="py-6">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
-                <!-- Summary Cards -->
+                <!---- Summary Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Students Card -->
                     <div
@@ -40,7 +40,7 @@ defineProps({
                         <div class="p-6">
                             <div class="flex items-center">
                                 <div class="p-3 rounded-full bg-blue-100/80 text-blue-600 shadow-inner">
-                                    <i class='bx bx-group text-2xl'></i>
+                                    <i class='bx bx-group text-2xl'></i>-
                                 </div>
                                 <div class="ml-4">
                                     <p class="text-sm font-medium text-blue-800/80">Total Students</p>
@@ -134,11 +134,7 @@ defineProps({
                                 class="text-center py-8 bg-gray-50/50 rounded-lg">
                                 <i class='bx bx-calendar-exclamation text-4xl text-gray-300 mb-2'></i>
                                 <p class="text-gray-500">No recent attendance records found</p>
-                                <button
-                                    class="mt-3 text-sm text-blue-600 hover:text-blue-800 flex items-center justify-center mx-auto">
-                                    <i class='bx bx-plus mr-1'></i>
-                                    Take Attendance Now
-                                </button>
+
                             </div>
                         </div>
                     </div>
