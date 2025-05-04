@@ -6,23 +6,58 @@ use App\Models\Classes;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class StudentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $students = Student::whereHas('class', function ($query) {
-            $query->where('teacher_id', Auth::id());
-        })
-            ->with('class')
-            ->join('classes', 'students.classes_id', '=', 'classes.id') // Join the classes table
-            ->orderByRaw('LEFT(classes.name, 1)') // Order by the first letter of the class name
-            ->select('students.*') // Ensure only student columns are selected
+        // Add this at the very start of the method
+        Log::debug('Request Data:', [
+            'search' => $request->input('search'),
+            'class' => $request->input('class'),
+            'user_id' => Auth::id()
+        ]);
+
+        $query = Student::with('class')
+            ->whereHas('class', function ($query) {
+                $query->where('teacher_id', Auth::id());
+            });
+
+        if ($request->has('search') && $request->input('search') !== '') {
+            $search = trim($request->input('search'));
+            Log::debug('Search Term:', ['term' => $search]);
+
+            $query->where(function ($q) use ($search) {
+                $q->where('students.name', 'like', "%{$search}%")
+                    ->orWhere('students.student_id', 'like', "%{$search}%")
+                    ->orWhere('students.email', 'like', "%{$search}%")
+                    ->orWhereHas('class', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+            });
+
+            Log::debug('SQL Query:', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
+        }
+
+        // Get classes for filter dropdown
+        $classes = Classes::where('teacher_id', Auth::id())
+            ->orderBy('name')
             ->get();
+
+        // Order by class name then student name
+        $students = $query->orderBy('students.name')
+            ->select('students.*')
+            ->paginate(6)
+            ->withQueryString();
+
+
 
         return Inertia::render('Students/Index', [
             'students' => $students,
+            'classes' => $classes,
+            'filters' => $request->only(['search', 'class']),
         ]);
     }
 

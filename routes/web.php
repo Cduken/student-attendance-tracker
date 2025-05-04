@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -18,9 +19,9 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -50,4 +51,4 @@ Route::middleware('auth')->group(function () {
         ->except(['index', 'create', 'store']);
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

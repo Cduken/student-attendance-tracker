@@ -21,8 +21,13 @@ class AttendanceController extends Controller
             ->get()
             ->groupBy('date');
 
+        $classes = Classes::where('teacher_id', Auth::id())
+            ->withCount('students')
+            ->get();
+
         return Inertia::render('Attendance/GlobalIndex', [
             'attendances' => $attendances,
+            'classes' => $classes,
         ]);
     }
 
