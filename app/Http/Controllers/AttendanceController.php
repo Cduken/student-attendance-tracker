@@ -64,31 +64,31 @@ class AttendanceController extends Controller
     }
 
     public function store(Request $request, Classes $class)
-    {
-        $validated = $request->validate([
-            'date' => 'required|date',
-            'attendances' => 'required|array',
-            'attendances.*.student_id' => 'required|exists:students,id',
-            'attendances.*.status' => 'required|in:present,absent,late,excused',
-            'attendances.*.notes' => 'nullable|string',
-        ]);
+{
+    $validated = $request->validate([
+        'date' => 'required|date',
+        'attendances' => 'required|array',
+        'attendances.*.student_id' => 'required|exists:students,id',
+        'attendances.*.status' => 'required|in:present,absent,late,excused',
+        'attendances.*.notes' => 'nullable|string',
+    ]);
 
-        foreach ($validated['attendances'] as $attendanceData) {
-            Attendance::updateOrCreate(
-                [
-                    'student_id' => $attendanceData['student_id'],
-                    'classes_id' => $class->id,
-                    'date' => $validated['date'], // Use the provided date
-                ],
-                [
-                    'status' => $attendanceData['status'],
-                    'notes' => $attendanceData['notes'] ?? null,
-                ]
-            );
-        }
-
-        return redirect()->route('classes.show', $class);
+    foreach ($validated['attendances'] as $attendanceData) {
+        Attendance::updateOrCreate(
+            [
+                'student_id' => $attendanceData['student_id'],
+                'classes_id' => $class->id,
+                'date' => $validated['date'],
+            ],
+            [
+                'status' => $attendanceData['status'],
+                'notes' => $attendanceData['notes'] ?? null,
+            ]
+        );
     }
+
+    return redirect()->route('classes.show', $class);
+}
 
     public function show(Attendance $attendance)
     {

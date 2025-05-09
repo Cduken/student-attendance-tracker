@@ -8,6 +8,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import Modal from '@/Components/Modal.vue';
+import axios from 'axios';
 
 const props = defineProps({
     classData: {
@@ -97,23 +98,41 @@ const updateStudent = () => {
 const showAttendanceForm = ref(false);
 const attendanceForm = ref({
     date: new Date().toISOString().split('T')[0],
-    attendances: props.students.map(student => ({
-        student_id: student.id,
-        status: 'present',
-        notes: '',
-    })),
+    attendances: [],
     errors: {},
 });
 
-const toggleAttendanceForm = () => {
-    showAttendanceForm.value = !showAttendanceForm.value;
-    if (showAttendanceForm.value) {
-        attendanceForm.value.attendances = props.students.map(student => ({
-            student_id: student.id,
-            status: 'present',
-            notes: '',
-        }));
+const toggleAttendanceForm = async () => {
+    if (!showAttendanceForm.value) {
+        // When opening the form, fetch the latest attendance data
+        try {
+            const response = await axios.get(route('attendance.class.index', props.classData.id));
+            const attendances = response.data.attendances || {};
+            const todayAttendances = attendances[attendanceForm.value.date] || [];
+
+            // Initialize attendance data with existing records or defaults
+            attendanceForm.value.attendances = props.students.map(student => {
+                const existingAttendance = todayAttendances.find(a => a.student_id === student.id);
+                return {
+                    student_id: student.id,
+                    status: existingAttendance?.status || 'present',
+                    notes: existingAttendance?.notes || '',
+                };
+            });
+        } catch (error) {
+            console.error('Error fetching attendance data:', error);
+            // If there's an error, initialize with defaults
+            attendanceForm.value.attendances = props.students.map(student => ({
+                student_id: student.id,
+                status: 'present',
+                notes: '',
+            }));
+        }
+    } else {
+        // When closing the form, clear the form data
+        attendanceForm.value.attendances = [];
     }
+    showAttendanceForm.value = !showAttendanceForm.value;
 };
 
 const updateAttendance = (studentId, field, value) => {
@@ -140,6 +159,7 @@ const submitAttendance = () => {
         onSuccess: () => {
             attendanceForm.value.errors = {};
             showAttendanceForm.value = false;
+            attendanceForm.value.attendances = [];
         },
         onError: (errors) => {
             console.error('Attendance errors:', errors);
